@@ -39,7 +39,7 @@ class Command < CLAide::Command
 
   def initialize(argv)
     @name = argv.shift_argument
-    @platform = argv.option('platform', DEFAULT)
+    @platform = argv.option('platform', DEFAULT).to_sym
     super
   end
 

@@ -4,8 +4,9 @@ module Pod
     TEMPLATE_NAME = Pathname.new('___FILEBASENAME___.playground')
 
     def initialize(platform)
-      @template = self.class.dir_for_platform(platform) + TEMPLATE_NAME
+      @template = self.class.dir_for_platform(platform)
       fail "Could not find template for #{platform}" if @template.nil?
+      @template += TEMPLATE_NAME
     end
 
     def generate(name)
