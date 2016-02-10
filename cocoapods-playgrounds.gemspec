@@ -8,8 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = CocoapodsPlaygrounds::VERSION
   spec.authors       = ['Boris Bügling']
   spec.email         = ['boris@icculus.org']
-  spec.description   = 'A short description of cocoapods-playgrounds.'
-  spec.summary       = 'A longer description of cocoapods-playgrounds.'
+  spec.summary       = 'Generates a Swift Playground for any Pod.'
   spec.homepage      = 'https://github.com/EXAMPLE/cocoapods-playgrounds'
   spec.license       = 'MIT'
 
