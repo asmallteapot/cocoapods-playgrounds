@@ -1,0 +1,17 @@
+Metrics/LineLength:
+  Max: 130
+
+Style/Documentation:
+  Exclude:
+    - 'spec/**/*'
+    - 'test/**/*'
+    - 'bin/playground'
+    - 'lib/cocoapods-playgrounds/generate.rb'
+
+Style/FileName:
+  Exclude:
+    - 'lib/cocoapods-playgrounds.rb'
+
+Lint/Void:
+  Exclude:
+    - 'spec/**/*'
