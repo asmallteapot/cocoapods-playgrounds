@@ -11,6 +11,7 @@ module Pod
 
     def generate(name)
       FileUtils.cp_r(@template, "#{name}.playground")
+      Pathname.new("#{name}.playground")
     end
 
     def self.platforms

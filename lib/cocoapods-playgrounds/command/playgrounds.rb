@@ -1,33 +1,18 @@
 module Pod
   class Command
-    # This is an example of a cocoapods plugin adding a top-level subcommand
-    # to the 'pod' command.
-    #
-    # You can also create subcommands of existing or new commands. Say you
-    # wanted to add a subcommand to `list` to show newly deprecated pods,
-    # (e.g. `pod list deprecated`), there are a few things that would need
-    # to change.
-    #
-    # - move this file to `lib/pod/command/list/deprecated.rb` and update
-    #   the class to exist in the the Pod::Command::List namespace
-    # - change this class to extend from `List` instead of `Command`. This
-    #   tells the plugin system that it is a subcommand of `list`.
-    # - edit `lib/cocoapods_plugins.rb` to require this file
-    #
-    # @todo Create a PR to add your plugin to CocoaPods/cocoapods.org
-    #       in the `plugins.json` file, once your plugin is released.
-    #
     class Playgrounds < Command
-      self.summary = 'Short description of cocoapods-playgrounds.'
+      self.summary = 'Generates a Swift Playground for any Pod.'
 
       self.description = <<-DESC
-        Longer description of cocoapods-playgrounds.
+        Generates a Swift Playground for any Pod.
       DESC
 
       self.arguments = [CLAide::Argument.new('NAME', true)]
 
       def initialize(argv)
         @name = argv.shift_argument
+        @platform = :ios # TODO: Should be configurable
+        @deployment_target = '9.0' # TODO: Should be configurable
         super
       end
 
@@ -37,7 +22,64 @@ module Pod
       end
 
       def run
-        UI.puts "Add your implementation for the cocoapods-playgrounds plugin in #{__FILE__}"
+        generate_project
+
+        Dir.chdir(target_dir) do
+          generate_podfile
+          Pod::Executable.execute_command('pod', ['install', '--no-repo-update'])
+          generator = Pod::PlaygroundGenerator.new(@platform)
+          path = generator.generate(@name)
+          File.open(path + 'Contents.swift', 'w') do |f|
+            f.write("//: Please build the scheme '#{target_name}' first\n")
+            f.write("import XCPlayground\n")
+            f.write("XCPlaygroundPage.currentPage.needsIndefiniteExecution = true\n\n")
+            f.write("import #{@name}\n\n")
+          end
+        end
+
+        `open #{workspace_path}`
+      end
+
+      private
+
+      def target_dir
+        Pathname.new(target_name)
+      end
+
+      def target_name
+        "#{@name}Playground"
+      end
+
+      def workspace_path
+        target_dir + "#{@name}.xcworkspace"
+      end
+
+      def generate_podfile
+        contents = "use_frameworks!\n\n"
+        contents << "target '#{target_name}' do\n"
+        contents << "pod '#{@name}'\n"
+        contents << "end\n"
+        File.open('Podfile', 'w') { |f| f.write(contents) }
+      end
+
+      def generate_project
+        `rm -fr #{target_dir}`
+        FileUtils.mkdir_p(target_dir)
+
+        project_path = "#{target_dir}/#{@name}.xcodeproj"
+        project = Xcodeproj::Project.new(project_path)
+
+        target = project.new_target(:framework,
+                                    target_name,
+                                    @platform,
+                                    @deployment_target)
+        target.build_configurations.each do |config|
+          config.build_settings['DEFINES_MODULE'] = 'NO'
+        end
+
+        # TODO: Should be at the root of the project
+        project.new_file("#{@name}.playground")
+        project.save
       end
     end
   end

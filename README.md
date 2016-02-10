@@ -1,7 +1,5 @@
 # This Could Be Us But You Playing
 
-:warning: WIP
-
 Generates a Swift Playground for any Pod.
 
 ## Usage
@@ -13,9 +11,8 @@ To generate a Playground from the commandline:
 
 To generate a Playground for a specific Pod:
 
-    $ pod playgrounds POD_NAME
+    $ pod playgrounds Alamofire
 
 ## Installation
 
     $ gem install cocoapods-playgrounds
-

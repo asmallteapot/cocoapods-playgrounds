@@ -7,6 +7,7 @@ Style/Documentation:
     - 'test/**/*'
     - 'bin/playground'
     - 'lib/cocoapods-playgrounds/generate.rb'
+    - 'lib/cocoapods-playgrounds/command/playgrounds.rb'
 
 Style/FileName:
   Exclude:
@@ -15,3 +16,9 @@ Style/FileName:
 Lint/Void:
   Exclude:
     - 'spec/**/*'
+
+Metrics/AbcSize:
+  Max: 20
+
+Metrics/MethodLength:
+  Max: 20
