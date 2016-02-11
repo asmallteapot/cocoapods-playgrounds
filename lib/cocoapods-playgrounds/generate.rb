@@ -1,3 +1,6 @@
+require 'fileutils'
+require 'pathname'
+
 module Pod
   class PlaygroundGenerator
     TEMPLATE_DIR = Pathname.new('Library/Xcode/Templates/File Templates/Source/Playground with Platform Choice.xctemplate')
