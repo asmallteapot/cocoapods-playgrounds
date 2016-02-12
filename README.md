@@ -4,6 +4,10 @@
 
 Generates a Swift Playground for any Pod.
 
+## Installation
+
+    $ gem install cocoapods-playgrounds
+
 ## Usage
 
 To generate a Playground from the commandline:
@@ -14,7 +18,3 @@ To generate a Playground from the commandline:
 To generate a Playground for a specific Pod:
 
     $ pod playgrounds Alamofire
-
-## Installation
-
-    $ gem install cocoapods-playgrounds
