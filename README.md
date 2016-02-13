@@ -22,7 +22,7 @@ To generate a Playground for a local development Pod:
 
 To generate a Playground with multiple Pods:
 
-    $ pod playground RxSwift,RxCocoa
+    $ pod playgrounds RxSwift,RxCocoa
 
 ### CLI
 
