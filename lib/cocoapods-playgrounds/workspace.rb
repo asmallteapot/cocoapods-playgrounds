@@ -16,15 +16,7 @@ module Pod
 
         generator = Pod::PlaygroundGenerator.new(@platform)
         path = generator.generate(names.first)
-        File.open(path + 'Contents.swift', 'w') do |f|
-          f.write("//: Please build the scheme '#{target_name}' first\n")
-          f.write("import XCPlayground\n")
-          f.write("XCPlaygroundPage.currentPage.needsIndefiniteExecution = true\n\n")
-          names.each do |name|
-            f.write("import #{name}\n")
-          end
-          f.write("\n")
-        end
+        generate_swift_code(path)
       end
 
       `open #{workspace_path}`
@@ -85,6 +77,18 @@ module Pod
       # TODO: Should be at the root of the project
       project.new_file("#{names.first}.playground")
       project.save
+    end
+
+    def generate_swift_code(path)
+      File.open(path + 'Contents.swift', 'w') do |f|
+        f.write("//: Please build the scheme '#{target_name}' first\n")
+        f.write("import XCPlayground\n")
+        f.write("XCPlaygroundPage.currentPage.needsIndefiniteExecution = true\n\n")
+        names.each do |name|
+          f.write("import #{name}\n")
+        end
+        f.write("\n")
+      end
     end
   end
 end
