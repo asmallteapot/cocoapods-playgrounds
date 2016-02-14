@@ -4,6 +4,7 @@ language: objective-c
 #language: ruby
 rvm: 2.0.0-p598
 cache: bundler
+before_install: gem install bundler
 script:
   - bundle exec rake specs
   - bundle exec rake rubocop
