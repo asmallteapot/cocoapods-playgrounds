@@ -1,5 +1,7 @@
 # This Could Be Us But You Playing
 
+[![Build Status](https://img.shields.io/travis/neonichu/ThisCouldBeUsButYouPlaying/master.svg?style=flat)](https://travis-ci.org/neonichu/ThisCouldBeUsButYouPlaying)
+
 ![](README_images/alamofire.png)
 
 Generates a Swift Playground for any Pod.
