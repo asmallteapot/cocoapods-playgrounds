@@ -1,18 +1,27 @@
+require 'cocoapods'
+require 'cocoapods-playgrounds/generate'
+require 'xcodeproj'
+
 module Pod
   class WorkspaceGenerator
-    def initialize(names, platform = :ios, deployment_target = '9.0')
+    SUPPORTED_TOOLS = [:carthage, :cocoapods].freeze
+
+    def initialize(names, tool = :cocoapods, platform = :ios, deployment_target = '9.0')
       @names = names
       @platform = platform
       @deployment_target = deployment_target
+
+      fail "Unsupported tool #{tool}" unless SUPPORTED_TOOLS.include?(tool)
+      @tool = tool
     end
 
     def generate
       @cwd = Pathname.getwd
-      generate_project
+      `rm -fr #{target_dir}`
+      FileUtils.mkdir_p(target_dir)
 
       Dir.chdir(target_dir) do
-        generate_podfile
-        Pod::Executable.execute_command('pod', ['install', '--no-repo-update'])
+        setup_project
 
         generator = Pod::PlaygroundGenerator.new(@platform)
         path = generator.generate(names.first)
@@ -23,6 +32,20 @@ module Pod
     end
 
     private
+
+    def setup_project
+      case @tool
+      when :carthage then
+        generate_cartfile
+        Pod::Executable.execute_command('carthage', ['update', '--platform', @platform.to_s])
+        generate_project
+        copy_carthage_frameworks
+      when :cocoapods then
+        generate_podfile
+        generate_project
+        Pod::Executable.execute_command('pod', ['install', '--no-repo-update'])
+      end
+    end
 
     def names
       @names.map do |name|
@@ -48,7 +71,42 @@ module Pod
     end
 
     def workspace_path
-      target_dir + "#{names.first}.xcworkspace"
+      extension = @tool == :cocoapods ? 'xcworkspace' : 'xcodeproj'
+      target_dir + "#{names.first}.#{extension}"
+    end
+
+    def generate_cartfile
+      contents = @names.map do |name|
+        "github \"#{name}\""
+      end.join("\n")
+      File.open('Cartfile', 'w') { |f| f.write(contents) }
+    end
+
+    def carthage_platform_dir
+      platform_dir = Dir.entries('Carthage/Build').find do |dir|
+        dir.downcase.to_sym == @platform
+      end
+      fail "Could not find frameworks for platform #{@platform}" if platform_dir.nil?
+
+      Pathname.new('Carthage/Build') + platform_dir
+    end
+
+    def derived_data_dir
+      result = Pod::Executable.execute_command('xcodebuild',
+                                               ['-configuration', 'Debug',
+                                                '-sdk', 'iphonesimulator',
+                                                '-showBuildSettings'])
+      built_products_dir = result.lines.find do |line|
+        line[/ BUILT_PRODUCTS_DIR =/]
+      end.split('=').last.strip
+      Pathname.new(built_products_dir)
+    end
+
+    def copy_carthage_frameworks
+      Dir.entries(carthage_platform_dir).each do |entry|
+        next unless entry.end_with?('.framework')
+        FileUtils.cp_r(carthage_platform_dir + entry, derived_data_dir)
+      end
     end
 
     def generate_podfile
@@ -60,10 +118,7 @@ module Pod
     end
 
     def generate_project
-      `rm -fr #{target_dir}`
-      FileUtils.mkdir_p(target_dir)
-
-      project_path = "#{target_dir}/#{names.first}.xcodeproj"
+      project_path = "#{names.first}.xcodeproj"
       project = Xcodeproj::Project.new(project_path)
 
       target = project.new_target(:framework,
