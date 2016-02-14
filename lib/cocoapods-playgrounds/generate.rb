@@ -8,7 +8,7 @@ module Pod
 
     def initialize(platform)
       @template = self.class.dir_for_platform(platform)
-      fail "Could not find template for #{platform}" if @template.nil?
+      raise "Could not find template for #{platform}" if @template.nil?
       @template += TEMPLATE_NAME
     end
 
