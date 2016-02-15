@@ -11,7 +11,7 @@ module Pod
       @platform = platform
       @deployment_target = deployment_target
 
-      fail "Unsupported tool #{tool}" unless SUPPORTED_TOOLS.include?(tool)
+      raise "Unsupported tool #{tool}" unless SUPPORTED_TOOLS.include?(tool)
       @tool = tool
     end
 
@@ -75,10 +75,19 @@ module Pod
       target_dir + "#{names.first}.#{extension}"
     end
 
+    def potential_cartfile
+      potential_cartfile = @cwd + @names.first
+      File.exist?(potential_cartfile) ? File.read(potential_cartfile) : nil
+    end
+
     def generate_cartfile
-      contents = @names.map do |name|
-        "github \"#{name}\""
-      end.join("\n")
+      contents = if potential_cartfile
+                   potential_cartfile
+                 else
+                   @names.map do |name|
+                     "github \"#{name}\""
+                   end.join("\n")
+                 end
       File.open('Cartfile', 'w') { |f| f.write(contents) }
     end
 
@@ -86,7 +95,7 @@ module Pod
       platform_dir = Dir.entries('Carthage/Build').find do |dir|
         dir.downcase.to_sym == @platform
       end
-      fail "Could not find frameworks for platform #{@platform}" if platform_dir.nil?
+      raise "Could not find frameworks for platform #{@platform}" if platform_dir.nil?
 
       Pathname.new('Carthage/Build') + platform_dir
     end
@@ -105,6 +114,7 @@ module Pod
     def copy_carthage_frameworks
       Dir.entries(carthage_platform_dir).each do |entry|
         next unless entry.end_with?('.framework')
+        FileUtils.mkdir_p(derived_data_dir)
         FileUtils.cp_r(carthage_platform_dir + entry, derived_data_dir)
       end
     end
@@ -139,10 +149,12 @@ module Pod
         f.write("//: Please build the scheme '#{target_name}' first\n")
         f.write("import XCPlayground\n")
         f.write("XCPlaygroundPage.currentPage.needsIndefiniteExecution = true\n\n")
-        names.each do |name|
-          f.write("import #{name}\n")
+        unless potential_cartfile
+          names.each do |name|
+            f.write("import #{name}\n")
+          end
+          f.write("\n")
         end
-        f.write("\n")
       end
     end
   end
