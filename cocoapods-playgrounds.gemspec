@@ -6,10 +6,10 @@ require 'cocoapods-playgrounds/gem_version.rb'
 Gem::Specification.new do |spec|
   spec.name          = 'cocoapods-playgrounds'
   spec.version       = CocoapodsPlaygrounds::VERSION
-  spec.authors       = ['Boris Bügling']
+  spec.authors       = ['Boris Bügling']
   spec.email         = ['boris@icculus.org']
   spec.summary       = 'Generates a Swift Playground for any Pod.'
-  spec.homepage      = 'https://github.com/EXAMPLE/cocoapods-playgrounds'
+  spec.homepage      = 'https://github.com/neonichu/ThisCouldBeUsButYouPlaying'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
