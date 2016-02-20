@@ -5,6 +5,7 @@ Style/Documentation:
   Exclude:
     - 'spec/**/*'
     - 'test/**/*'
+    - 'bin/carthage-play'
     - 'bin/playground'
     - 'lib/cocoapods-playgrounds/generate.rb'
     - 'lib/cocoapods-playgrounds/workspace.rb'
@@ -23,3 +24,6 @@ Metrics/AbcSize:
 
 Metrics/MethodLength:
   Max: 20
+
+Metrics/ClassLength:
+  Max: 150

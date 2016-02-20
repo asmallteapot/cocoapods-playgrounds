@@ -26,6 +26,14 @@ To generate a Playground with multiple Pods:
 
     $ pod playgrounds RxSwift,RxCocoa
 
+### Carthage
+
+To generate a Playground for a Carthage-enabled library:
+
+    $ carthage-play Alamofire/Alamofire
+
+Note: This currently assumes that libraries are hosted on GitHub.
+
 ### CLI
 
 To generate an empty Playground from the commandline:
