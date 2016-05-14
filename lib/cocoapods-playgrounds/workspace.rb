@@ -120,10 +120,21 @@ module Pod
     end
 
     def generate_podfile
-      contents = "use_frameworks!\n\n"
-      contents << "target '#{target_name}' do\n"
-      contents << "#{pods}\n"
-      contents << "end\n"
+      contents = <<-EOT
+use_frameworks!
+
+target '#{target_name}' do
+#{pods}
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['CONFIGURATION_BUILD_DIR'] = '$PODS_CONFIGURATION_BUILD_DIR'
+    end
+  end
+end
+EOT
       File.open('Podfile', 'w') { |f| f.write(contents) }
     end
 
