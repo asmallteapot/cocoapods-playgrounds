@@ -49,7 +49,11 @@ module Pod
 
     def names
       @names.map do |name|
-        (@cwd + name).exist? ? File.basename(name, '.podspec') : File.dirname(name)
+        if !(@cwd + name).exist? && name.include?('/')
+          File.dirname(name)
+        else
+          File.basename(name, '.podspec')
+        end
       end
     end
 
