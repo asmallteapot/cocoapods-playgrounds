@@ -49,15 +49,16 @@ module Pod
 
     def names
       @names.map do |name|
-        File.basename(name, '.podspec')
+        (@cwd + name).exist? ? File.basename(name, '.podspec') : File.dirname(name)
       end
     end
 
     def pods
       names.zip(@names).map do |name, path|
-        path = @cwd + path
+        abs_path = @cwd + path
+        name = path unless abs_path.exist? # support subspecs
         requirement = "pod '#{name}'"
-        requirement += ", :path => '#{path.dirname}'" if path.exist?
+        requirement += ", :path => '#{abs_path.dirname}'" if abs_path.exist?
         requirement
       end.join("\n")
     end
