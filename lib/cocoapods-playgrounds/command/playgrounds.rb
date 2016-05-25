@@ -9,9 +9,16 @@ module Pod
 
       self.arguments = [CLAide::Argument.new('NAMES', true)]
 
+      def self.options
+        [
+          ['--no-install', 'Skip running `pod install`']
+        ]
+      end
+
       def initialize(argv)
         arg = argv.shift_argument
         @names = arg.split(',') if arg
+        @install = argv.flag?('install', true)
         super
       end
 
@@ -23,7 +30,7 @@ module Pod
       def run
         # TODO: Pass platform and deployment target from configuration
         generator = WorkspaceGenerator.new(@names)
-        generator.generate
+        generator.generate(@install)
       end
     end
   end

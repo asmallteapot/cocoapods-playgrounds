@@ -15,25 +15,25 @@ module Pod
       @tool = tool
     end
 
-    def generate
+    def generate(install = true)
       @cwd = Pathname.getwd
       `rm -fr #{target_dir}`
       FileUtils.mkdir_p(target_dir)
 
       Dir.chdir(target_dir) do
-        setup_project
+        setup_project(install)
 
         generator = Pod::PlaygroundGenerator.new(@platform)
         path = generator.generate(names.first)
         generate_swift_code(path)
       end
 
-      `open #{workspace_path}`
+      `open #{workspace_path}` if install
     end
 
     private
 
-    def setup_project
+    def setup_project(install = true)
       case @tool
       when :carthage then
         generate_cartfile
@@ -43,7 +43,7 @@ module Pod
       when :cocoapods then
         generate_podfile
         generate_project
-        Pod::Executable.execute_command('pod', ['install', '--no-repo-update'])
+        Pod::Executable.execute_command('pod', ['install', '--no-repo-update']) if install
       end
     end
 
