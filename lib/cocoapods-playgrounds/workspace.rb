@@ -17,7 +17,7 @@ module Pod
 
     def generate(install = true)
       @cwd = Pathname.getwd
-      `rm -fr #{target_dir}`
+      `rm -fr '#{target_dir}'`
       FileUtils.mkdir_p(target_dir)
 
       Dir.chdir(target_dir) do
