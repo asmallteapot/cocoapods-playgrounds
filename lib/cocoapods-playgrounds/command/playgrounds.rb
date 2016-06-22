@@ -70,8 +70,8 @@ module Pod
           FileUtils.rm_rf(pods)
 
           File.open("#{name}Playground/#{name}.playground/Contents.swift", 'w') do |f|
-            f.write("import XCPlayground\n")
-            f.write("XCPlaygroundPage.currentPage.needsIndefiniteExecution = true\n\n")
+            f.write("import PlaygroundSupport\n")
+            f.write("PlaygroundPage.current.needsIndefiniteExecution = true\n\n")
           end
         end
       end
