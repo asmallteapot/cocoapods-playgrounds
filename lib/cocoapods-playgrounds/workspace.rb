@@ -15,7 +15,7 @@ module Pod
       @tool = tool
     end
 
-    def generate(install = true)
+    def generate(install = true, open = true)
       @cwd = Pathname.getwd
       `rm -fr '#{target_dir}'`
       FileUtils.mkdir_p(target_dir)
@@ -28,7 +28,8 @@ module Pod
         generate_swift_code(path)
       end
 
-      `open #{workspace_path}` if install
+      `open #{workspace_path}` if install && open
+      names.first
     end
 
     private
