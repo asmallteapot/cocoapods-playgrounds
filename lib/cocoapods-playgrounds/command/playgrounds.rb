@@ -17,6 +17,7 @@ module Pod
         [
           ['--ipad', 'Create an iPad compatible Playground.'],
           ['--no-install', 'Skip running `pod install`'],
+          ['--no-migrate', 'Skip Swift migration for iPad Playgrounds.'],
           ['--no-open', 'Do not open Xcode after generating the Playground.'],
           ['--platform', "Platform to generate for (default: #{DEFAULT_PLATFORM_NAME})"],
           ['--platform_version', 'Platform version to generate for ' \
@@ -33,6 +34,7 @@ module Pod
         @names = arg.split(',') if arg
         @install = argv.flag?('install', true)
         @ipad = argv.flag?('ipad', false)
+        @migrate = argv.flag?('migrate', true)
         @open = argv.flag?('open', true) && !@ipad
         @platform = argv.option('platform', DEFAULT_PLATFORM_NAME).to_sym
         @platform_version = argv.option('platform_version', Playgrounds.default_version_for_platform(@platform))
@@ -59,10 +61,28 @@ module Pod
           pods = "#{name}Playground/Pods"
 
           Dir.glob("#{pods}/**/*.swift").each do |file|
-            FileUtils.cp(file, playground_files)
+            if @migrate
+              migrate(file, "#{playground_files}/#{File.basename(file)}")
+            else
+              FileUtils.cp(file, playground_files)
+            end
           end
           FileUtils.rm_rf(pods)
+
+          File.open("#{name}Playground/#{name}.playground/Contents.swift", 'w') do |f|
+            f.write("import XCPlayground\n")
+            f.write("XCPlaygroundPage.currentPage.needsIndefiniteExecution = true\n\n")
+          end
         end
+      end
+
+      private
+
+      # Thanks to http://swift.ayaka.me/posts/2016/6/17/running-the-swift-30-migrator-on-a-standalone-swift-file
+      def migrate(input, output)
+        xcode_path = `xcode-select -p`.strip
+        sdk_path = "#{xcode_path}/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk"
+        `xcrun swift-update -sdk #{sdk_path} -target arm64-apple-ios9 #{input} >#{output}`
       end
     end
   end
