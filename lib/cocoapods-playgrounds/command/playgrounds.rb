@@ -82,7 +82,8 @@ module Pod
       def migrate(input, output)
         xcode_path = `xcode-select -p`.strip
         sdk_path = "#{xcode_path}/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk"
-        `xcrun swift-update -sdk #{sdk_path} -target arm64-apple-ios9 #{input} >#{output}`
+        `xcrun swift-update -sdk '#{sdk_path}' -target arm64-apple-ios9 #{input} >#{output}`
+        FileUtils.cp(input, output) if $?.exitstatus != 0
       end
     end
   end
