@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cocoapods-playgrounds (1.2.0)
+    cocoapods-playgrounds (1.2.1)
       cocoapods (>= 1.0.0, < 2.0)
 
 GEM
