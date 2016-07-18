@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     cocoapods-playgrounds (1.2.0)
-      cocoapods (~> 1.0.0)
+      cocoapods (>= 1.0.0, < 2.0)
 
 GEM
   remote: https://rubygems.org/
@@ -100,4 +100,4 @@ DEPENDENCIES
   rubocop
 
 BUNDLED WITH
-   1.11.2
+   1.12.5
