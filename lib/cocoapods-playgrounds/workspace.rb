@@ -147,12 +147,16 @@ EOT
       project_path = "#{names.first}.xcodeproj"
       project = Xcodeproj::Project.new(project_path)
 
-      target = project.new_target(:framework,
+      target = project.new_target(:application,
                                   target_name,
                                   @platform,
                                   @deployment_target)
       target.build_configurations.each do |config|
+        config.build_settings['ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME'] = 'LaunchImage'
+        config.build_settings['CODE_SIGN_IDENTITY[sdk=iphoneos*]'] = ''
+        config.build_settings['CODESIGNING_REQUIRED'] = 'NO'
         config.build_settings['DEFINES_MODULE'] = 'NO'
+        config.build_settings['EMBEDDED_CONTENT_CONTAINS_SWIFT'] = 'NO'
       end
 
       # TODO: Should be at the root of the project
