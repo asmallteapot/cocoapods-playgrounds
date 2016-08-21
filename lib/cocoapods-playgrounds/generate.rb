@@ -30,11 +30,16 @@ module Pod
       xcode + TEMPLATE_DIR
     end
 
+    def self.major_version
+      `xcodebuild -version`.split("\n").first.split(' ')[1].split('.').first.to_i
+    end
+
     def self.platform_name(file)
       file.downcase.sub(' ', '').to_sym
     end
 
     def self.dir_for_platform(platform)
+      platform = :macos if major_version == 8 && platform.to_sym == :osx
       Dir.foreach(template_dir) do |file|
         return (template_dir + file) if platform_name(file) == platform
       end

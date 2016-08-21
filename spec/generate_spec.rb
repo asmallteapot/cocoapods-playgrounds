@@ -12,7 +12,8 @@ module Pod
     it 'can list available platforms for Playgrounds' do
       platforms = PlaygroundGenerator.platforms
 
-      platforms.should == [:ios, :osx, :tvos]
+      expected_platforms = PlaygroundGenerator.major_version == 8 ? [:ios, :macos, :tvos] : [:ios, :osx, :tvos]
+      platforms.should == expected_platforms
     end
 
     it 'returns nil if template for platform cannot be found' do
@@ -24,7 +25,8 @@ module Pod
     it 'can find the template for OS X' do
       platform = PlaygroundGenerator.dir_for_platform(:osx)
 
-      platform.to_s.end_with?('OS X').should == true
+      suffix = PlaygroundGenerator.major_version == 8 ? 'macOS' : 'OS X'
+      platform.to_s.end_with?(suffix).should == true
     end
 
     it 'can find the template for iOS' do
