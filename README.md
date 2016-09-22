@@ -1,6 +1,6 @@
 # This Could Be Us But You Playing
 
-[![Build Status](https://img.shields.io/travis/neonichu/ThisCouldBeUsButYouPlaying/master.svg?style=flat)](https://travis-ci.org/neonichu/ThisCouldBeUsButYouPlaying)
+[![Build Status](https://img.shields.io/travis/segiddins/ThisCouldBeUsButYouPlaying/master.svg?style=flat)](https://travis-ci.org/segiddins/ThisCouldBeUsButYouPlaying)
 
 ![](README_images/alamofire.png)
 
