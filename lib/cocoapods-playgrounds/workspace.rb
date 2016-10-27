@@ -77,7 +77,7 @@ module Pod
 
     def workspace_path
       extension = @tool == :cocoapods ? 'xcworkspace' : 'xcodeproj'
-      target_dir + "#{names.first}.#{extension}"
+      "#{names.first}.#{extension}"
     end
 
     def potential_cartfile
@@ -136,6 +136,7 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['CONFIGURATION_BUILD_DIR'] = '$PODS_CONFIGURATION_BUILD_DIR'
+      config.build_settings['SWIFT_VERSION'] = '3.0'
     end
   end
 end
@@ -168,8 +169,8 @@ EOT
     def generate_swift_code(path)
       File.open(path + 'Contents.swift', 'w') do |f|
         f.write("//: Please build the scheme '#{target_name}' first\n")
-        f.write("import XCPlayground\n")
-        f.write("XCPlaygroundPage.currentPage.needsIndefiniteExecution = true\n\n")
+        f.write("import PlaygroundSupport\n")
+        f.write("PlaygroundPage.current.needsIndefiniteExecution = true\n\n")
         unless potential_cartfile
           names.each do |name|
             f.write("import #{name}\n")
