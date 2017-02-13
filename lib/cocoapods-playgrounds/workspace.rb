@@ -6,10 +6,11 @@ module Pod
   class WorkspaceGenerator
     SUPPORTED_TOOLS = [:carthage, :cocoapods].freeze
 
-    def initialize(names, tool = :cocoapods, platform = :ios, deployment_target = '9.0')
+    def initialize(names, tool = :cocoapods, platform = :ios, deployment_target = '9.0', use_legacy_xcode)
       @names = names
       @platform = platform
       @deployment_target = deployment_target
+      @use_legacy_xcode = use_legacy_xcode
 
       raise "Unsupported tool #{tool}" unless SUPPORTED_TOOLS.include?(tool)
       @tool = tool
@@ -27,8 +28,8 @@ module Pod
         path = generator.generate(names.first)
         generate_swift_code(path)
       end
-
-      `open #{workspace_path}` if install
+      file_path = "#{target_dir}/#{workspace_path}"
+      `open #{file_path}` if install
     end
 
     private
@@ -77,7 +78,11 @@ module Pod
 
     def workspace_path
       extension = @tool == :cocoapods ? 'xcworkspace' : 'xcodeproj'
-      target_dir + "#{names.first}.#{extension}"
+      if @use_legacy_xcode
+        target_dir + "#{names.first}.#{extension}"
+      else
+        "#{names.first}.#{extension}"
+      end
     end
 
     def potential_cartfile
@@ -136,6 +141,7 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['CONFIGURATION_BUILD_DIR'] = '$PODS_CONFIGURATION_BUILD_DIR'
+      #{"config.build_settings['SWIFT_VERSION'] = '3.0'" unless @use_legacy_xcode}
     end
   end
 end
@@ -168,8 +174,14 @@ EOT
     def generate_swift_code(path)
       File.open(path + 'Contents.swift', 'w') do |f|
         f.write("//: Please build the scheme '#{target_name}' first\n")
-        f.write("import XCPlayground\n")
-        f.write("XCPlaygroundPage.currentPage.needsIndefiniteExecution = true\n\n")
+        if @use_legacy_xcode
+          f.write("import XCPlayground\n")
+          f.write("XCPlaygroundPage.currentPage.needsIndefiniteExecution = true\n\n")
+        else
+          f.write("import PlaygroundSupport\n")
+          f.write("PlaygroundPage.current.needsIndefiniteExecution = true\n\n")
+        end
+
         unless potential_cartfile
           names.each do |name|
             f.write("import #{name}\n")

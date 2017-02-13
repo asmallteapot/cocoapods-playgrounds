@@ -32,6 +32,7 @@ module Pod
         @install = argv.flag?('install', true)
         @platform = argv.option('platform', DEFAULT_PLATFORM_NAME).to_sym
         @platform_version = argv.option('platform_version', Playgrounds.default_version_for_platform(@platform))
+        @use_legacy_xcode = is_legacy_xcode?
         super
       end
 
@@ -40,9 +41,13 @@ module Pod
         help! 'At least one Pod name is required.' unless @names
       end
 
+      def is_legacy_xcode?
+        %x( xcodebuild -version ).include? "Xcode 7"
+      end
+
       def run
         # TODO: Pass platform and deployment target from configuration
-        generator = WorkspaceGenerator.new(@names, :cocoapods, @platform, @platform_version)
+        generator = WorkspaceGenerator.new(@names, :cocoapods, @platform, @platform_version, @use_legacy_xcode)
         generator.generate(@install)
       end
     end
