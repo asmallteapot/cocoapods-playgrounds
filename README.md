@@ -1,5 +1,6 @@
 # This Could Be Us But You Playing
 
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 [![Build Status](https://img.shields.io/travis/segiddins/ThisCouldBeUsButYouPlaying/master.svg?style=flat)](https://travis-ci.org/segiddins/ThisCouldBeUsButYouPlaying)
 
 ![](README_images/alamofire.png)
