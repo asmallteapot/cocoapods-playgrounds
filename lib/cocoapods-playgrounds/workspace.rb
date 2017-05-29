@@ -77,7 +77,7 @@ module Pod
 
     def workspace_path
       extension = @tool == :cocoapods ? 'xcworkspace' : 'xcodeproj'
-      target_dir + "#{names.first}.#{extension}"
+      "#{names.first}.#{extension}"
     end
 
     def potential_cartfile
@@ -136,6 +136,7 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['CONFIGURATION_BUILD_DIR'] = '$PODS_CONFIGURATION_BUILD_DIR'
+      config.build_settings['SWIFT_VERSION'] = '3.0'
     end
   end
 end
