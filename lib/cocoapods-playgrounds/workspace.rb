@@ -37,7 +37,7 @@ module Pod
       case @tool
       when :carthage then
         generate_cartfile
-        Pod::Executable.execute_command('carthage', ['update', '--platform', @platform.to_s])
+        Pod::Executable.execute_command('carthage', ['update', '--platform', @platform.to_s, '--no-use-binaries'])
         generate_project
         copy_carthage_frameworks
       when :cocoapods then
