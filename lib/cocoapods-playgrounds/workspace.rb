@@ -43,7 +43,7 @@ module Pod
       when :cocoapods then
         generate_podfile
         generate_project
-        Pod::Executable.execute_command('pod', ['install', '--no-repo-update']) if install
+        Pod::Executable.execute_command('pod', %w(install --no-repo-update)) if install
       end
     end
 
@@ -107,9 +107,7 @@ module Pod
 
     def derived_data_dir
       result = Pod::Executable.execute_command('xcodebuild',
-                                               ['-configuration', 'Debug',
-                                                '-sdk', 'iphonesimulator',
-                                                '-showBuildSettings'])
+                                               %w(-configuration Debug -sdk iphonesimulator -showBuildSettings))
       built_products_dir = result.lines.find do |line|
         line[/ BUILT_PRODUCTS_DIR =/]
       end.split('=').last.strip
@@ -158,6 +156,7 @@ EOT
         config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
         config.build_settings['DEFINES_MODULE'] = 'NO'
         config.build_settings['EMBEDDED_CONTENT_CONTAINS_SWIFT'] = 'NO'
+        config.build_settings['SWIFT_VERSION'] = 4.0
       end
 
       # TODO: Should be at the root of the project
@@ -176,6 +175,14 @@ EOT
           end
           f.write("\n")
         end
+      end
+    end
+
+    # TODO: automation
+    def pre_build_pods
+      names.each do |name|
+        Pod::Executable.execute_command('xcodebuild',
+                                        ['-project', 'Pods/Pods.xcodeproj/', '-scheme', name, '-destination', 'generic/platform=iOS Simulator,name=iPhone X,OS=11.1', 'build'])
       end
     end
   end
