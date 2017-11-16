@@ -177,13 +177,5 @@ EOT
         end
       end
     end
-
-    # TODO: automation
-    def pre_build_pods
-      names.each do |name|
-        Pod::Executable.execute_command('xcodebuild',
-                                        ['-project', 'Pods/Pods.xcodeproj/', '-scheme', name, '-destination', 'generic/platform=iOS Simulator,name=iPhone X,OS=11.1', 'build'])
-      end
-    end
   end
 end
