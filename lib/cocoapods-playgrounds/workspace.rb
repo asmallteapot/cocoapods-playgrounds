@@ -25,9 +25,8 @@ module Pod
       Dir.chdir(target_dir) do
         setup_project(install)
 
-        generator = Pod::PlaygroundGenerator.new(@platform)
+        generator = Pod::PlaygroundGenerator.new(@platform, @names)
         path = generator.generate(names.first)
-        generate_swift_code(path)
       end
 
       `open #{workspace_path}` if install
@@ -123,8 +122,10 @@ module Pod
     end
 
     def generate_podfile
-      contents = <<~EOT
+      contents = <<~PODFILE
+        platform :#{@platform}, '#{@deployment_target}'
         use_frameworks!
+        inhibit_all_warnings!
 
         target '#{target_name}' do
         #{pods}
@@ -137,7 +138,7 @@ module Pod
             end
           end
         end
-      EOT
+      PODFILE
       File.open('Podfile', 'w') { |f| f.write(contents) }
     end
 
@@ -156,25 +157,13 @@ module Pod
         config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
         config.build_settings['DEFINES_MODULE'] = 'NO'
         config.build_settings['EMBEDDED_CONTENT_CONTAINS_SWIFT'] = 'NO'
+        # TODO: define swift version correctly
+        config.build_settings['SWIFT_VERSION'] = '4.0'
       end
 
       # TODO: Should be at the root of the project
       project.new_file("#{names.first}.playground")
       project.save
-    end
-
-    def generate_swift_code(path)
-      File.open(path + 'Contents.swift', 'w') do |f|
-        f.write("//: Please build the scheme '#{target_name}' first\n")
-        f.write("import PlaygroundSupport\n")
-        f.write("PlaygroundPage.current.needsIndefiniteExecution = true\n\n")
-        unless potential_cartfile
-          names.each do |name|
-            f.write("import #{name}\n")
-          end
-          f.write("\n")
-        end
-      end
     end
   end
 end
