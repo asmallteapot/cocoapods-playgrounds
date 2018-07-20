@@ -3,7 +3,7 @@ require 'pathname'
 
 module Pod
   class PlaygroundGenerator
-    TEMPLATE_DIR = Pathname.new('Library/Xcode/Templates/File Templates/Source/Playground with Platform Choice.xctemplate')
+    TEMPLATE_DIR = Pathname.new('Library/Xcode/Templates/File Templates/Playground/Blank.xctemplate')
     TEMPLATE_NAME = Pathname.new('___FILEBASENAME___.playground')
 
     def initialize(platform)
