@@ -25,9 +25,9 @@ module Pod
       Dir.chdir(target_dir) do
         setup_project(install)
 
-        generator = Pod::PlaygroundGenerator.new(@platform)
+        generator = Pod::PlaygroundGenerator.new(@platform, @names)
         path = generator.generate(names.first)
-        generate_swift_code(path)
+        path
       end
 
       `open #{workspace_path}` if install
@@ -123,8 +123,10 @@ module Pod
     end
 
     def generate_podfile
-      contents = <<~EOT
+      contents = <<~PODFILE
+        platform :#{@platform}, '#{@deployment_target}'
         use_frameworks!
+        inhibit_all_warnings!
 
         target '#{target_name}' do
         #{pods}
@@ -137,7 +139,7 @@ module Pod
             end
           end
         end
-      EOT
+      PODFILE
       File.open('Podfile', 'w') { |f| f.write(contents) }
     end
 
@@ -150,12 +152,7 @@ module Pod
                                   @platform,
                                   @deployment_target)
       target.build_configurations.each do |config|
-        config.build_settings['ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME'] = 'LaunchImage'
-        config.build_settings['CODE_SIGN_IDENTITY[sdk=iphoneos*]'] = ''
-        config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
-        config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
-        config.build_settings['DEFINES_MODULE'] = 'NO'
-        config.build_settings['EMBEDDED_CONTENT_CONTAINS_SWIFT'] = 'NO'
+        update_build_settings(config)
       end
 
       # TODO: Should be at the root of the project
@@ -163,18 +160,15 @@ module Pod
       project.save
     end
 
-    def generate_swift_code(path)
-      File.open(path + 'Contents.swift', 'w') do |f|
-        f.write("//: Please build the scheme '#{target_name}' first\n")
-        f.write("import PlaygroundSupport\n")
-        f.write("PlaygroundPage.current.needsIndefiniteExecution = true\n\n")
-        unless potential_cartfile
-          names.each do |name|
-            f.write("import #{name}\n")
-          end
-          f.write("\n")
-        end
-      end
+    def update_build_settings(config)
+      config.build_settings['ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME'] = 'LaunchImage'
+      config.build_settings['CODE_SIGN_IDENTITY[sdk=iphoneos*]'] = ''
+      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+      config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
+      config.build_settings['DEFINES_MODULE'] = 'NO'
+      config.build_settings['EMBEDDED_CONTENT_CONTAINS_SWIFT'] = 'NO'
+      # TODO: define swift version correctly
+      config.build_settings['SWIFT_VERSION'] = '4.0'
     end
   end
 end
