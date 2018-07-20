@@ -3,46 +3,47 @@ require 'pathname'
 
 module Pod
   class PlaygroundGenerator
-    TEMPLATE_DIR = Pathname.new('Library/Xcode/Templates/File Templates/Playground/Blank.xctemplate')
-    TEMPLATE_NAME = Pathname.new('___FILEBASENAME___.playground')
-
     def initialize(platform)
-      @template = self.class.dir_for_platform(platform)
-      raise "Could not find template for #{platform}" if @template.nil?
-      @template += TEMPLATE_NAME
+      @platform = platform
     end
 
     def generate(name)
-      FileUtils.cp_r(@template, "#{name}.playground")
-      Pathname.new("#{name}.playground")
+      path = Pathname.new(name + '.playground')
+      FileUtils.mkdir(path)
+
+      contents_swift_path = path + 'Contents.swift'
+      contents_swift_path.write(contents_swift)
+
+      contents_xcplayground_path = path + 'Contents.xcplayground'
+      contents_xcplayground_path.write(contents_xcplayground)
     end
 
-    def self.platforms
-      Dir.entries(template_dir).map do |file|
-        next if file.start_with?('.')
-        next unless (template_dir + file).directory?
-        platform_name(file)
-      end.compact
-    end
-
-    def self.template_dir
-      xcode = Pathname.new(`xcode-select -p`.strip)
-      xcode + TEMPLATE_DIR
-    end
-
-    def self.major_version
-      `xcodebuild -version`.split("\n").first.split(' ')[1].split('.').first.to_i
-    end
-
-    def self.platform_name(file)
-      file.downcase.sub(' ', '').to_sym
-    end
-
-    def self.dir_for_platform(platform)
-      platform = :macos if major_version == 8 && platform.to_sym == :osx
-      Dir.foreach(template_dir) do |file|
-        return (template_dir + file) if platform_name(file) == platform
+    def base_framework
+      if @platform == :macos
+        'Cocoa'
+      else
+        'UIKit'
       end
+    end
+
+    def self.contents_swift
+      contents_swift = <<EOF
+//: Playground - noun: a place where people can play
+
+import #{base_framework}
+
+var str = "Hello, playground"
+EOF
+    end
+
+    def self.contents_xcplayground
+      contents_xcplayground_xml = <<EOF
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<playground version='5.0' target-platform='#{@platform.to_s}'>
+    <timeline fileName='timeline.xctimeline'/>
+</playground>
+EOF
+      contents_xcplayground_xml
     end
   end
 end
