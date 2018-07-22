@@ -1,7 +1,6 @@
 os: osx
 osx_image: xcode9.4.1
 language: objective-c
-rvm: 2.5.1p57
 cache: bundler
 before_install: gem install bundler
 script:
