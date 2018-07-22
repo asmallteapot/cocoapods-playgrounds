@@ -1,4 +1,6 @@
-require File.expand_path('../spec_helper', __FILE__)
+# frozen_string_literal: true
+
+require File.expand_path('spec_helper', __dir__)
 
 module Pod
   describe PlaygroundGenerator do

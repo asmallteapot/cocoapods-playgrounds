@@ -1,5 +1,12 @@
+AllCops:
+  TargetRubyVersion: 2.3
+
 Metrics/LineLength:
   Max: 130
+
+Naming/FileName:
+  Exclude:
+    - 'lib/cocoapods-playgrounds.rb'
 
 Style/Documentation:
   Exclude:
@@ -10,10 +17,6 @@ Style/Documentation:
     - 'lib/cocoapods-playgrounds/generate.rb'
     - 'lib/cocoapods-playgrounds/workspace.rb'
     - 'lib/cocoapods-playgrounds/command/playgrounds.rb'
-
-Style/FileName:
-  Exclude:
-    - 'lib/cocoapods-playgrounds.rb'
 
 Lint/Void:
   Exclude:
