@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 require 'pathname'
 
@@ -27,23 +29,22 @@ module Pod
     end
 
     def self.contents_swift
-      contents_swift = <<EOF
-//: Playground - noun: a place where people can play
+      <<~CONTENTS_SWIFT
+        //: Playground - noun: a place where people can play
 
-import #{base_framework}
+        import #{base_framework}
 
-var str = "Hello, playground"
-EOF
+        var str = "Hello, playground"
+      CONTENTS_SWIFT
     end
 
     def self.contents_xcplayground
-      contents_xcplayground_xml = <<EOF
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<playground version='5.0' target-platform='#{@platform.to_s}'>
-    <timeline fileName='timeline.xctimeline'/>
-</playground>
-EOF
-      contents_xcplayground_xml
+      <<~CONTENTS_XML
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <playground version='5.0' target-platform='#{@platform}'>
+            <timeline fileName='timeline.xctimeline'/>
+        </playground>
+      CONTENTS_XML
     end
   end
 end
