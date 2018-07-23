@@ -28,7 +28,7 @@ module Pod
       end
     end
 
-    def self.contents_swift
+    def contents_swift
       <<~CONTENTS_SWIFT
         //: Playground - noun: a place where people can play
 
@@ -38,7 +38,7 @@ module Pod
       CONTENTS_SWIFT
     end
 
-    def self.contents_xcplayground
+    def contents_xcplayground
       <<~CONTENTS_XML
         <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <playground version='5.0' target-platform='#{@platform}'>
