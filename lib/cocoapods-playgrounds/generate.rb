@@ -10,14 +10,16 @@ module Pod
     end
 
     def generate(name)
-      path = Pathname.new(name + '.playground')
-      FileUtils.mkdir(path)
+      playground_path = Pathname.new(name + '.playground')
+      FileUtils.mkdir(playground_path)
 
-      contents_swift_path = path + 'Contents.swift'
+      contents_swift_path = playground_path + 'Contents.swift'
       contents_swift_path.write(contents_swift)
 
-      contents_xcplayground_path = path + 'Contents.xcplayground'
+      contents_xcplayground_path = playground_path + 'Contents.xcplayground'
       contents_xcplayground_path.write(contents_xcplayground)
+
+      playground_path
     end
 
     def base_framework
