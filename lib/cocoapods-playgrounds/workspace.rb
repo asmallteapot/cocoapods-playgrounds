@@ -25,7 +25,7 @@ module Pod
       Dir.chdir(target_dir) do
         setup_project(install)
 
-        generator = Pod::PlaygroundGenerator.new(@platform)
+        generator = Pod::PlaygroundGenerator.new(@platform, @names)
         path = generator.generate(names.first)
       end
 

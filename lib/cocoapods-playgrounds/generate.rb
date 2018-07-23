@@ -5,8 +5,9 @@ require 'pathname'
 
 module Pod
   class PlaygroundGenerator
-    def initialize(platform)
+    def initialize(platform, import_names=[])
       @platform = platform
+      @import_names = import_names
     end
 
     def generate(name)
@@ -30,11 +31,20 @@ module Pod
       end
     end
 
+    def contents_swift_imports
+      all_import_names = [base_framework, 'PlaygroundSupport'] + @import_names
+      all_import_names.map {|name| "import #{name}" }.join("\n")
+    end
+
     def contents_swift
       <<~CONTENTS_SWIFT
         //: Playground - noun: a place where people can play
+        //: Press Cmd-B to build your CocoaPods.
 
-        import #{base_framework}
+        #{contents_swift_imports}
+
+        // Uncomment this to let your code keep running in the background.
+        // PlaygroundPage.current.needsIndefiniteExecution = true
 
         var str = "Hello, playground"
       CONTENTS_SWIFT
