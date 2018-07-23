@@ -127,7 +127,9 @@ module Pod
 
     def podfile
       <<~PODFILE
+        platform :#{@platform}, '#{@deployment_target}'
         use_frameworks!
+        inhibit_all_warnings!
 
         target '#{target_name}' do
           #{pods}
