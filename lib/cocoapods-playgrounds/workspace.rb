@@ -27,7 +27,6 @@ module Pod
 
         generator = Pod::PlaygroundGenerator.new(@platform)
         path = generator.generate(names.first)
-        generate_swift_code(path)
       end
 
       `open #{workspace_path}` if install
@@ -168,20 +167,6 @@ module Pod
       # TODO: Should be at the root of the project
       project.new_file("#{names.first}.playground")
       project.save
-    end
-
-    def generate_swift_code(path)
-      File.open(path + 'Contents.swift', 'w') do |f|
-        f.write("//: Please build the scheme '#{target_name}' first\n")
-        f.write("import PlaygroundSupport\n")
-        f.write("PlaygroundPage.current.needsIndefiniteExecution = true\n\n")
-        unless potential_cartfile
-          names.each do |name|
-            f.write("import #{name}\n")
-          end
-          f.write("\n")
-        end
-      end
     end
   end
 end
