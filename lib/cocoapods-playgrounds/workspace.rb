@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'cocoapods'
-require 'cocoapods-playgrounds/generate'
+require 'cocoapods-playgrounds/playground'
 require 'xcodeproj'
 
 module Pod

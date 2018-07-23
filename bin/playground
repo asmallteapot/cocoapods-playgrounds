@@ -9,7 +9,7 @@ if $PROGRAM_NAME == __FILE__
 end
 
 require 'claide'
-require 'cocoapods-playgrounds/generate'
+require 'cocoapods-playgrounds/playground'
 require 'cocoapods-playgrounds/gem_version'
 
 class PlainInformative < StandardError
