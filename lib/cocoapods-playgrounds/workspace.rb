@@ -74,6 +74,8 @@ module Pod
         config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
         config.build_settings['DEFINES_MODULE'] = 'NO'
         config.build_settings['EMBEDDED_CONTENT_CONTAINS_SWIFT'] = 'NO'
+        # TODO: define swift version correctly
+        config.build_settings['SWIFT_VERSION'] = '4.0'
       end
 
       # TODO: Should be at the root of the project
