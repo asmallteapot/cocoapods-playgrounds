@@ -16,7 +16,7 @@ module Pod
     end
 
     def pods
-      names.zip(@names).map do |name, path|
+      names.zip(@dependency_names).map do |name, path|
         abs_path = @cwd + path
         name = path unless abs_path.exist? # support subspecs
         requirement = "pod '#{name}'"
@@ -31,7 +31,7 @@ module Pod
         use_frameworks!
         inhibit_all_warnings!
 
-        target '#{target_name}' do
+        target '#{@target_name}' do
           #{pods}
         end
 

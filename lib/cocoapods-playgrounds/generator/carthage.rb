@@ -17,7 +17,7 @@ module Pod
     end
 
     def potential_cartfile
-      potential_cartfile = @cwd + @names.first
+      potential_cartfile = @cwd + @target_name
       File.exist?(potential_cartfile) ? File.read(potential_cartfile) : nil
     end
 
@@ -25,7 +25,7 @@ module Pod
       contents = if potential_cartfile
                    potential_cartfile
                  else
-                   @names.map do |name|
+                   @dependency_names.map do |name|
                      "github \"#{name}\""
                    end.join("\n")
                  end

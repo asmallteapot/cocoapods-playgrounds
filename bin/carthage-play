@@ -39,7 +39,7 @@ class Command < CLAide::Command
   end
 
   def run
-    generator = Pod::CarthageGenerator.new([@name])
+    generator = Pod::CarthageGenerator.new("#{@name}Playground", [@name])
     generator.generate
   end
 end

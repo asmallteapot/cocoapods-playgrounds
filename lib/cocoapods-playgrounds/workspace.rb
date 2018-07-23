@@ -6,22 +6,24 @@ require 'xcodeproj'
 
 module Pod
   class WorkspaceGenerator
-    def initialize(names, platform = :ios, deployment_target = '9.0')
-      @names = names
+    def initialize(target_name, dependency_names, platform = :ios, deployment_target = '9.0')
+      @target_name = target_name
+      @target_dir = Pathname.new(@target_name)
+      @dependency_names = dependency_names
       @platform = platform
       @deployment_target = deployment_target
     end
 
     def generate(install = true)
       @cwd = Pathname.getwd
-      `rm -fr '#{target_dir}'`
-      FileUtils.mkdir_p(target_dir)
+      `rm -fr '#{@target_dir}'`
+      FileUtils.mkdir_p(@target_dir)
 
-      Dir.chdir(target_dir) do
+      Dir.chdir(@target_dir) do
         setup_project(install)
 
-        generator = Pod::PlaygroundGenerator.new(@platform, @names)
-        path = generator.generate(names.first)
+        generator = Pod::PlaygroundGenerator.new(@platform, @dependency_names)
+        path = generator.generate(@target_name)
       end
 
       `open #{workspace_path}` if install
@@ -34,7 +36,7 @@ module Pod
     end
 
     def names
-      @names.map do |name|
+      @dependency_names.map do |name|
         if !(@cwd + name).exist? && name.include?('/')
           File.dirname(name)
         else
@@ -43,28 +45,20 @@ module Pod
       end
     end
 
-    def target_dir
-      Pathname.new(target_name)
-    end
-
-    def target_name
-      "#{names.first}Playground"
-    end
-
     def workspace_extension
       raise NotImplementedError.new("#{self.class.name}#workspace_extension must be overridden.")
     end
 
     def workspace_path
-      target_dir + "#{names.first}.#{workspace_extension}"
+      @target_dir + "#{@target_name}.#{workspace_extension}"
     end
 
     def generate_project
-      project_path = "#{names.first}.xcodeproj"
+      project_path = "#{@target_name}.xcodeproj"
       project = Xcodeproj::Project.new(project_path)
 
       target = project.new_target(:application,
-                                  target_name,
+                                  @target_name,
                                   @platform,
                                   @deployment_target)
       target.build_configurations.each do |config|
@@ -79,7 +73,7 @@ module Pod
       end
 
       # TODO: Should be at the root of the project
-      project.new_file("#{names.first}.playground")
+      project.new_file("#{@target_name}.playground")
       project.save
     end
   end
