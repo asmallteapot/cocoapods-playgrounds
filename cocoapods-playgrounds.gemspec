@@ -1,15 +1,16 @@
-# coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+# frozen_string_literal: true
+
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'cocoapods-playgrounds/gem_version.rb'
 
 Gem::Specification.new do |spec|
   spec.name          = 'cocoapods-playgrounds'
   spec.version       = CocoapodsPlaygrounds::VERSION
-  spec.authors       = ['Boris Bügling']
-  spec.email         = ['boris@icculus.org']
+  spec.authors       = ['Boris Bügling', 'Ellen Teapot']
+  spec.email         = ['boris@icculus.org', 'hi@asmallteapot.com']
   spec.summary       = 'Generates a Swift Playground for any Pod.'
-  spec.homepage      = 'https://github.com/neonichu/ThisCouldBeUsButYouPlaying'
+  spec.homepage      = 'https://github.com/asmallteapot/cocoapods-playgrounds'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
