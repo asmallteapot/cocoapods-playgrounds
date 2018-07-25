@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 gemspec
@@ -10,4 +12,3 @@ group :development do
   gem 'prettybacon', '~> 0.0.2'
   gem 'rubocop', '~> 0.58.2'
 end
-

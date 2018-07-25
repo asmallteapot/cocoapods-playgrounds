@@ -1,4 +1,6 @@
-require File.expand_path('../spec_helper', __FILE__)
+# frozen_string_literal: true
+
+require File.expand_path('spec_helper', __dir__)
 
 module Pod
   describe PlaygroundGenerator do
@@ -12,7 +14,7 @@ module Pod
     it 'can list available platforms for Playgrounds' do
       platforms = PlaygroundGenerator.platforms
 
-      expected_platforms = PlaygroundGenerator.major_version == 8 ? [:ios, :macos, :tvos] : [:ios, :osx, :tvos]
+      expected_platforms = PlaygroundGenerator.major_version == 8 ? %i[ios macos tvos] : %i[ios osx tvos]
       platforms.should == expected_platforms
     end
 
