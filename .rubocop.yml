@@ -11,7 +11,7 @@ Style/Documentation:
     - 'lib/cocoapods-playgrounds/workspace.rb'
     - 'lib/cocoapods-playgrounds/command/playgrounds.rb'
 
-Style/FileName:
+Naming/FileName:
   Exclude:
     - 'lib/cocoapods-playgrounds.rb'
 
