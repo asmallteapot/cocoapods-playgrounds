@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'cocoapods'
 require 'cocoapods-playgrounds/generate'
 require 'xcodeproj'
 
 module Pod
   class WorkspaceGenerator
-    SUPPORTED_TOOLS = [:carthage, :cocoapods].freeze
+    SUPPORTED_TOOLS = %i[carthage cocoapods].freeze
 
     def initialize(names, tool = :cocoapods, platform = :ios, deployment_target = '9.0')
       @names = names
@@ -124,23 +126,26 @@ module Pod
       end
     end
 
-    def generate_podfile
-      contents = <<-EOT
-use_frameworks!
+    def podfile
+      <<~PODFILE
+        use_frameworks!
 
-target '#{target_name}' do
-#{pods}
-end
+        target '#{target_name}' do
+          #{pods}
+        end
 
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['CONFIGURATION_BUILD_DIR'] = '$PODS_CONFIGURATION_BUILD_DIR'
+        post_install do |installer|
+          installer.pods_project.targets.each do |target|
+            target.build_configurations.each do |config|
+              config.build_settings['CONFIGURATION_BUILD_DIR'] = '$PODS_CONFIGURATION_BUILD_DIR'
+            end
+          end
+        end
+      PODFILE
     end
-  end
-end
-EOT
-      File.open('Podfile', 'w') { |f| f.write(contents) }
+
+    def generate_podfile
+      File.open('Podfile', 'w') { |f| f.write(podfile) }
     end
 
     def generate_project
