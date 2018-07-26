@@ -10,7 +10,7 @@ end
 
 require 'claide'
 require 'cocoapods-playgrounds/gem_version'
-require 'cocoapods-playgrounds/workspace'
+require 'cocoapods-playgrounds/workspace/carthage'
 
 class PlainInformative < StandardError
   include CLAide::InformativeError
@@ -39,7 +39,7 @@ class Command < CLAide::Command
   end
 
   def run
-    generator = Pod::WorkspaceGenerator.new([@name], :carthage)
+    generator = Pod::CarthageGenerator.new(@name, [@name])
     generator.generate
   end
 end

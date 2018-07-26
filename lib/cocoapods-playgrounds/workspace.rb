@@ -6,149 +6,66 @@ require 'xcodeproj'
 
 module Pod
   class WorkspaceGenerator
-    SUPPORTED_TOOLS = %i[carthage cocoapods].freeze
-
-    def initialize(names, tool = :cocoapods, platform = :ios, deployment_target = '9.0')
-      @names = names
+    def initialize(workspace_name, spec_names, platform = :ios, deployment_target = '9.0')
+      @workspace_name = workspace_name
+      @spec_names = spec_names
       @platform = platform
       @deployment_target = deployment_target
-
-      raise "Unsupported tool #{tool}" unless SUPPORTED_TOOLS.include?(tool)
-      @tool = tool
     end
 
-    def generate(install = true)
-      @cwd = Pathname.getwd
-      `rm -fr '#{target_dir}'`
-      FileUtils.mkdir_p(target_dir)
-
-      Dir.chdir(target_dir) do
-        setup_project(install)
-
-        generator = Pod::PlaygroundGenerator.new(@platform, @names)
-        path = generator.generate(names.first)
-        path
+    def generate(install: true, open_workspace: install)
+      generate_app_target(name: "#{@workspace_name}Playground") do
+        generate_spec_file
+        perform_update if perform_update_by_default?
+        generate_project
+        perform_install if install
+        generate_playground
       end
 
-      `open #{workspace_path}` if install
+      perform_open_workspace if open_workspace
     end
 
     private
 
-    def setup_project(install = true)
-      case @tool
-      when :carthage then
-        generate_cartfile
-        Pod::Executable.execute_command('carthage', ['update', '--platform', @platform.to_s])
-        generate_project
-        copy_carthage_frameworks
-      when :cocoapods then
-        generate_podfile
-        generate_project
-        Pod::Executable.execute_command('pod', ['install', '--no-repo-update']) if install
+    def generate_app_target(name:, clean: true, &block)
+      @app_target_name = name
+      @app_target_dir = Pathname.new(@app_target_name)
+
+      `rm -fr '#{@app_target_dir}'` if clean
+      FileUtils.mkdir_p(@app_target_dir)
+
+      @cwd = Pathname.getwd
+      Dir.chdir(@app_target_dir) do
+        yield
       end
     end
 
-    def names
-      @names.map do |name|
-        if !(@cwd + name).exist? && name.include?('/')
-          File.dirname(name)
-        else
-          File.basename(name, '.podspec')
-        end
-      end
+    def generate_spec_file
+      raise NotImplementedError, "#{self.class.name}##{method} must be overridden."
     end
 
-    def pods
-      names.zip(@names).map do |name, path|
-        abs_path = @cwd + path
-        name = path unless abs_path.exist? # support subspecs
-        requirement = "pod '#{name}'"
-        requirement += ", :path => '#{abs_path.dirname}'" if abs_path.exist?
-        requirement
-      end.join("\n")
+    def perform_update
+      raise NotImplementedError, "#{self.class.name}##{method} must be overridden."
     end
 
-    def target_dir
-      Pathname.new(target_name)
+    def perform_install
+      raise NotImplementedError, "#{self.class.name}##{method} must be overridden."
     end
 
-    def target_name
-      "#{names.first}Playground"
+    def perform_update_by_default?
+      raise NotImplementedError, "#{self.class.name}##{method} must be overridden."
     end
 
-    def workspace_path
-      extension = @tool == :cocoapods ? 'xcworkspace' : 'xcodeproj'
-      target_dir + "#{names.first}.#{extension}"
-    end
-
-    def potential_cartfile
-      potential_cartfile = @cwd + @names.first
-      File.exist?(potential_cartfile) ? File.read(potential_cartfile) : nil
-    end
-
-    def generate_cartfile
-      contents = potential_cartfile || @names.map do |name|
-        "github \"#{name}\""
-      end.join("\n")
-      File.open('Cartfile', 'w') { |f| f.write(contents) }
-    end
-
-    def carthage_platform_dir
-      platform_dir = Dir.entries('Carthage/Build').find do |dir|
-        dir.downcase.to_sym == @platform
-      end
-      raise "Could not find frameworks for platform #{@platform}" if platform_dir.nil?
-
-      Pathname.new('Carthage/Build') + platform_dir
-    end
-
-    def derived_data_dir
-      result = Pod::Executable.execute_command('xcodebuild',
-                                               ['-configuration', 'Debug',
-                                                '-sdk', 'iphonesimulator',
-                                                '-showBuildSettings'])
-      built_products_dir = result.lines.find do |line|
-        line[/ BUILT_PRODUCTS_DIR =/]
-      end.split('=').last.strip
-      Pathname.new(built_products_dir)
-    end
-
-    def copy_carthage_frameworks
-      Dir.entries(carthage_platform_dir).each do |entry|
-        next unless entry.end_with?('.framework')
-        FileUtils.mkdir_p(derived_data_dir)
-        FileUtils.cp_r(carthage_platform_dir + entry, derived_data_dir)
-      end
-    end
-
-    def generate_podfile
-      contents = <<~PODFILE
-        platform :#{@platform}, '#{@deployment_target}'
-        use_frameworks!
-        inhibit_all_warnings!
-
-        target '#{target_name}' do
-        #{pods}
-        end
-
-        post_install do |installer|
-          installer.pods_project.targets.each do |target|
-            target.build_configurations.each do |config|
-              config.build_settings['CONFIGURATION_BUILD_DIR'] = '$PODS_CONFIGURATION_BUILD_DIR'
-            end
-          end
-        end
-      PODFILE
-      File.open('Podfile', 'w') { |f| f.write(contents) }
+    def perform_open_workspace
+      raise NotImplementedError, "#{self.class.name}##{method} must be overridden."
     end
 
     def generate_project
-      project_path = "#{names.first}.xcodeproj"
+      project_path = "#{@workspace_name}.xcodeproj"
       project = Xcodeproj::Project.new(project_path)
 
       target = project.new_target(:application,
-                                  target_name,
+                                  @app_target_name,
                                   @platform,
                                   @deployment_target)
       target.build_configurations.each do |config|
@@ -156,7 +73,7 @@ module Pod
       end
 
       # TODO: Should be at the root of the project
-      project.new_file("#{names.first}.playground")
+      project.new_file("#{@workspace_name}.playground")
       project.save
     end
 
@@ -169,6 +86,11 @@ module Pod
       config.build_settings['EMBEDDED_CONTENT_CONTAINS_SWIFT'] = 'NO'
       # TODO: define swift version correctly
       config.build_settings['SWIFT_VERSION'] = '4.0'
+    end
+
+    def generate_playground
+      generator = Pod::PlaygroundGenerator.new(@platform, @spec_names)
+      generator.generate(@workspace_name)
     end
   end
 end

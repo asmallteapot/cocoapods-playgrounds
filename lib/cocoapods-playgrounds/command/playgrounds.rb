@@ -44,8 +44,8 @@ module Pod
 
       def run
         # TODO: Pass platform and deployment target from configuration
-        generator = WorkspaceGenerator.new(@names, :cocoapods, @platform, @platform_version)
-        generator.generate(@install)
+        generator = CocoaPodsGenerator.new(@names.first, @names, @platform, @platform_version)
+        generator.generate(install: @install)
       end
     end
   end
