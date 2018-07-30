@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
+require 'cocoapods-playgrounds/generate/playground'
+require 'cocoapods-playgrounds/generate/workspace/cocoapods'
 require 'xcodeproj'
 
 module Pod
   class Command
+    # Command for generating a workspace that contains one or more CocoaPods dependencies
     class Playgrounds < Command
       DEFAULT_PLATFORM_NAME = :ios
 

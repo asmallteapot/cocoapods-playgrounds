@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require File.expand_path('../spec_helper', __dir__)
+require 'cocoapods-playgrounds/command/playgrounds'
+require 'cocoapods-playgrounds/generate/workspace/cocoapods'
 
 module Pod
   describe Command::Playgrounds do

@@ -4,6 +4,7 @@ require 'fileutils'
 require 'pathname'
 
 module Pod
+  # Generates a Swift playground
   class PlaygroundGenerator
     def initialize(platform, import_names = [])
       @platform = platform

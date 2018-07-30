@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cocoapods-playgrounds/workspace'
+require 'cocoapods-playgrounds/generate/workspace'
 
 module Pod
   # Playground workspace generator for Carthage

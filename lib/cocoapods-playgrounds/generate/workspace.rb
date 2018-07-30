@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 require 'cocoapods'
-require 'cocoapods-playgrounds/generate'
+require 'cocoapods-playgrounds/generate/playground'
 require 'xcodeproj'
 
 module Pod
+  # Base class for generating a workspace that contains a playground and its dependencies
   class WorkspaceGenerator
     def initialize(workspace_name, spec_names, platform = :ios, deployment_target = '9.0')
       @workspace_name = workspace_name
@@ -27,7 +28,7 @@ module Pod
 
     private
 
-    def generate_app_target(name:, clean: true, &block)
+    def generate_app_target(name:, clean: true)
       @app_target_name = name
       @app_target_dir = Pathname.new(@app_target_name)
 

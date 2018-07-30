@@ -9,9 +9,6 @@ Style/Documentation:
     - 'test/**/*'
     - 'bin/carthage-play'
     - 'bin/playground'
-    - 'lib/cocoapods-playgrounds/generate.rb'
-    - 'lib/cocoapods-playgrounds/workspace.rb'
-    - 'lib/cocoapods-playgrounds/command/playgrounds.rb'
 
 Naming/FileName:
   Exclude:

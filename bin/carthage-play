@@ -10,7 +10,7 @@ end
 
 require 'claide'
 require 'cocoapods-playgrounds/gem_version'
-require 'cocoapods-playgrounds/workspace/carthage'
+require 'cocoapods-playgrounds/generate/workspace/carthage'
 
 class PlainInformative < StandardError
   include CLAide::InformativeError

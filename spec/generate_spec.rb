@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require File.expand_path('spec_helper', __dir__)
+require 'cocoapods-playgrounds/generate/playground'
 
 module Pod
   describe PlaygroundGenerator do
