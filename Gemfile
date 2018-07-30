@@ -11,4 +11,6 @@ group :development do
   gem 'mocha-on-bacon', '~> 0.2.3'
   gem 'prettybacon', '~> 0.0.2'
   gem 'rubocop', '~> 0.58.2'
+  gem 'rubocop-require_tools'
 end
+

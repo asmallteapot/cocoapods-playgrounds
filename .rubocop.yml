@@ -1,3 +1,5 @@
+require: rubocop/require_tools
+
 Metrics/LineLength:
   Max: 130
 
