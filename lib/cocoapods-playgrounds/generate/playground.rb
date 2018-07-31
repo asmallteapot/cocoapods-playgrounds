@@ -33,7 +33,7 @@ module Pod
     end
 
     def contents_swift_imports
-      all_import_names = [base_framework, 'PlaygroundSupport'] + @import_names
+      all_import_names = [base_framework, 'PlaygroundSupport'] # + @import_names
       all_import_names.map { |name| "import #{name}" }.join("\n")
     end
 
