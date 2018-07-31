@@ -7,39 +7,35 @@ require 'xcodeproj'
 module Pod
   # Base class for generating a workspace that contains a playground and its dependencies
   class WorkspaceGenerator
-    def initialize(workspace_name, spec_names, platform = :ios, deployment_target = '9.0')
-      @workspace_name = workspace_name
-      @spec_names = spec_names
+    def initialize(name: nil, dependencies: [], platform: :ios, deployment_target: '9.0')
+      @base_name = name || 'Empty'
+      @dependencies = dependencies
       @platform = platform
       @deployment_target = deployment_target
+
+      @app_target_name = "#{@base_name}Playground"
+
+      @input_dir = Pathname.getwd
+      @output_dir = @input_dir + Pathname.new(@base_name)
+      @output_path_workspace = @output_dir + "#{@base_name}.xcworkspace"
+      @output_path_project = @output_dir + "#{@base_name}.xcodeproj"
+      @output_path_playground = @output_dir + "#{@base_name}.playground"
     end
 
     def generate(install: true, open_workspace: install)
-      generate_app_target(name: "#{@workspace_name}Playground") do
+      FileUtils.rm_rf @output_dir
+      FileUtils.mkdir_p @output_dir
+      Dir.chdir(@output_dir) do
         generate_spec_file
         perform_update if perform_update_by_default?
         generate_project
         perform_install if install
         generate_playground
+        perform_open_workspace if open_workspace
       end
-
-      perform_open_workspace if open_workspace
     end
 
     private
-
-    def generate_app_target(name:, clean: true)
-      @app_target_name = name
-      @app_target_dir = Pathname.new(@app_target_name)
-
-      `rm -fr '#{@app_target_dir}'` if clean
-      FileUtils.mkdir_p(@app_target_dir)
-
-      @cwd = Pathname.getwd
-      Dir.chdir(@app_target_dir) do
-        yield
-      end
-    end
 
     def generate_spec_file
       raise NotImplementedError, "#{self.class.name}##{method} must be overridden."
@@ -62,8 +58,7 @@ module Pod
     end
 
     def generate_project
-      project_path = "#{@workspace_name}.xcodeproj"
-      project = Xcodeproj::Project.new(project_path)
+      project = Xcodeproj::Project.new(@output_path_project)
 
       target = project.new_target(:application,
                                   @app_target_name,
@@ -74,7 +69,7 @@ module Pod
       end
 
       # TODO: Should be at the root of the project
-      project.new_file("#{@workspace_name}.playground")
+      project.new_file(@output_path_playground)
       project.save
     end
 
@@ -90,8 +85,8 @@ module Pod
     end
 
     def generate_playground
-      generator = Pod::PlaygroundGenerator.new(@platform, @spec_names)
-      generator.generate(@workspace_name)
+      generator = Pod::PlaygroundGenerator.new(@platform, @dependencies)
+      generator.generate(@base_name)
     end
   end
 end

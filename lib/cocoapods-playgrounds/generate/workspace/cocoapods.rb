@@ -22,18 +22,28 @@ module Pod
     end
 
     def perform_open_workspace
-      `open #{workspace_path}`
+      `open #{@output_path_workspace}`
     end
 
     private
 
-    def workspace_path
-      @app_target_dir + "#{@workspace_name}.xcworkspace"
+    def requirement_for_spec(spec_name, dependency)
+      local_path = @input_dir + dependency
+      if local_path.exist?
+        <<~SPEC
+          pod '#{spec_name}', path: '#{local_path.dirname}'
+        SPEC
+      else
+        <<~SPEC
+          pod '#{dependency}'
+        SPEC
+      end
     end
 
-    def specs
-      @spec_names.map do |name|
-        if !(@cwd + name).exist? && name.include?('/')
+    def spec_names
+      @dependencies.map do |name|
+        abs_path = @input_dir + name
+        if !abs_path.exist? && name.include?('/')
           File.dirname(name)
         else
           File.basename(name, '.podspec')
@@ -42,12 +52,8 @@ module Pod
     end
 
     def pods
-      specs.zip(@spec_names).map do |name, path|
-        abs_path = @cwd + path
-        name = path unless abs_path.exist? # support subspecs
-        requirement = "pod '#{name}'"
-        requirement += ", :path => '#{abs_path.dirname}'" if abs_path.exist?
-        requirement
+      spec_names.zip(@dependencies).map do |spec_name, dependency|
+        requirement_for_spec spec_name, dependency
       end.join("\n")
     end
 

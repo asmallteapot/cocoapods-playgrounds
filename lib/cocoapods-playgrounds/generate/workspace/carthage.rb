@@ -26,24 +26,33 @@ module Pod
     end
 
     def perform_open_workspace
-      `open #{workspace_path}`
+      `open #{@output_path_project}`
     end
 
     private
 
-    def workspace_path
-      @app_target_dir + "#{@workspace_name}.xcodeproj"
+    def input_cartfile_path
+      @input_dir + @base_name
     end
 
-    def potential_cartfile
-      potential_cartfile = @cwd + @workspace_name
-      File.exist?(potential_cartfile) ? File.read(potential_cartfile) : nil
+    def input_cartfile_contents
+      File.file?(input_cartfile_path) ? File.read(input_cartfile_path) : nil
+    end
+
+    def requirement_for_dependency(name, source: 'github')
+      <<~SPEC
+        #{source} "#{name}"
+      SPEC
+    end
+
+    def generated_cartfile_contents
+      @dependencies.map do |name|
+        requirement_for_dependency name
+      end.join("\n")
     end
 
     def cartfile_contents
-      potential_cartfile || @spec_names.map do |name|
-        "github \"#{name}\""
-      end.join("\n")
+      input_cartfile_contents || generated_cartfile_contents
     end
 
     def carthage_platform_dir

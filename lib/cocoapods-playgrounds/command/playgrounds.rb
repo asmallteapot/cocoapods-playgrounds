@@ -47,7 +47,7 @@ module Pod
 
       def run
         # TODO: Pass platform and deployment target from configuration
-        generator = CocoaPodsGenerator.new(@names.first, @names, @platform, @platform_version)
+        generator = CocoaPodsGenerator.new(dependencies: @names, platform: @platform, deployment_target: @platform_version)
         generator.generate(install: @install)
       end
     end
