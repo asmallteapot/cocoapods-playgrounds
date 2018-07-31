@@ -1,3 +1,5 @@
+require: rubocop/require_tools
+
 Metrics/LineLength:
   Max: 130
 
@@ -7,11 +9,8 @@ Style/Documentation:
     - 'test/**/*'
     - 'bin/carthage-play'
     - 'bin/playground'
-    - 'lib/cocoapods-playgrounds/generate.rb'
-    - 'lib/cocoapods-playgrounds/workspace.rb'
-    - 'lib/cocoapods-playgrounds/command/playgrounds.rb'
 
-Style/FileName:
+Naming/FileName:
   Exclude:
     - 'lib/cocoapods-playgrounds.rb'
 

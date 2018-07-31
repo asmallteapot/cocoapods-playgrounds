@@ -1,7 +1,12 @@
+# frozen_string_literal: true
+
+require 'cocoapods-playgrounds/generate/playground'
+require 'cocoapods-playgrounds/generate/workspace/cocoapods'
 require 'xcodeproj'
 
 module Pod
   class Command
+    # Command for generating a workspace that contains one or more CocoaPods dependencies
     class Playgrounds < Command
       DEFAULT_PLATFORM_NAME = :ios
 
@@ -42,8 +47,8 @@ module Pod
 
       def run
         # TODO: Pass platform and deployment target from configuration
-        generator = WorkspaceGenerator.new(@names, :cocoapods, @platform, @platform_version)
-        generator.generate(@install)
+        generator = CocoaPodsGenerator.new(dependencies: @names, platform: @platform, deployment_target: @platform_version)
+        generator.generate(install: @install)
       end
     end
   end
