@@ -1,10 +1,12 @@
 # CocoaPods Playgrounds
 
+[![RubyGems](https://img.shields.io/gem/v/cocoapods-playgrounds.svg?style=flat)](https://rubygems.org/gems/cocoapods-playgrounds)
+[![MIT license](https://img.shields.io/github/license/asmallteapot/cocoapods-playgrounds.svg)](https://github.com/asmallteapot/cocoapods-playgrounds/blob/master/LICENSE.txt)
 [![Build Status](https://img.shields.io/travis/asmallteapot/cocoapods-playgrounds/master.svg?style=flat)](https://travis-ci.org/asmallteapot/cocoapods-playgrounds)
 
-![](README_images/alamofire.png)
+Generate a Swift Playground for any CocoaPod or Carthage module.
 
-Generates a Swift Playground for any Pod.
+![](README_images/alamofire.png)
 
 ## Installation
 
