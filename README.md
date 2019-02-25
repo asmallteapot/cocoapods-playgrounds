@@ -1,6 +1,6 @@
-# This Could Be Us But You Playing
+# CocoaPods Playgrounds
 
-[![Build Status](https://img.shields.io/travis/segiddins/ThisCouldBeUsButYouPlaying/master.svg?style=flat)](https://travis-ci.org/segiddins/ThisCouldBeUsButYouPlaying)
+[![Build Status](https://img.shields.io/travis/asmallteapot/cocoapods-playgrounds/master.svg?style=flat)](https://travis-ci.org/asmallteapot/cocoapods-playgrounds)
 
 ![](README_images/alamofire.png)
 
