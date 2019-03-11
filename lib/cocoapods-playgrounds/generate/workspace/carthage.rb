@@ -20,6 +20,7 @@ module Pod
     def perform_install
       Dir.entries(carthage_platform_dir).each do |entry|
         next unless entry.end_with?('.framework')
+
         FileUtils.mkdir_p(derived_data_dir)
         FileUtils.cp_r(carthage_platform_dir + entry, derived_data_dir)
       end
